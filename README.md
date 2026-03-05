@@ -1,10 +1,9 @@
 # Organization Manager App
 
-This is my backend project.  
-It is safe and fast.  
-I use Python and FastAPI.
+This is my backend project  
+I use Python and FastAPI
 
-## 📊 Database Design
+## Database Design
 
 The system uses a relational schema optimized for multi-tenancy and high-performance search.
 
@@ -54,7 +53,6 @@ erDiagram
     }
 ```
 
-### 🗄️ Detailed Schema Breakdown
 
 - **User**: Stores global account information. Features a `TSVECTOR` column (`search_vector`) with a `GIN` index for ultra-fast full-text search across names and emails.
 - **Organization**: The tenant boundary. All business data (Items) and logs belong to an organization.
