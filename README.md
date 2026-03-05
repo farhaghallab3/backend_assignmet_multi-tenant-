@@ -24,6 +24,17 @@ I use Python and FastAPI.
 - Google Gemini 
 - Pytest + Testcontainers for tests
 
+## AI Chatbot 
+
+The AI part uses Google Gemini
+
+How to use real AI:
+1. Go → https://aistudio.google.com/app/apikey
+2. Make new key (free)
+3. Copy .env
+4. Write your key: GEMINI_API_KEY=AIz...
+5. Run docker compose up --build
+
 ## How to start the app
 
 You need Docker on your computer.
