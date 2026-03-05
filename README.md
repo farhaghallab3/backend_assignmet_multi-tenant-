@@ -54,11 +54,6 @@ erDiagram
 ```
 
 
-- **User**: Stores global account information. Features a `TSVECTOR` column (`search_vector`) with a `GIN` index for ultra-fast full-text search across names and emails.
-- **Organization**: The tenant boundary. All business data (Items) and logs belong to an organization.
-- **Membership**: A standard junction table with an added `role` column (`admin` or `member`) to enforce RBAC.
-- **Item**: Flexible data storage using PostgreSQL `JSONB` for schema-less business logic support while maintaining relational integrity.
-- **AuditLog**: An append-only table used for security tracking and as the data source for the AI Chatbot's daily summaries.
 
 ## What the app can do
 - Users can sign up and log in (with JWT)
@@ -69,16 +64,15 @@ erDiagram
 - Search users fast (with Postgres full-text)
 - See activity logs
 - Ask AI questions about logs (use Google Gemini)
-- Everything is async
 
 ## Technologies I use
+- Python 3.11+
 - FastAPI
 - SQLAlchemy 2.0 (async)
 - PostgreSQL
-- JWT for login
-- Docker + Docker Compose
-- Google Gemini 
-- Pytest + Testcontainers for tests
+- JWT authentication
+- RBAC authorization
+- Pytest 
 
 ## AI Chatbot 
 
@@ -93,7 +87,7 @@ How to use real AI:
 
 ## How to start the app
 
-You need Docker on your computer.
+You need Docker on your laptop or computer
 
 1. Run this command:
 ```bash
