@@ -19,10 +19,8 @@ services:
     build: .
     ports:
       - "8000:8000"
-    environment:
-      - DATABASE_URL=postgresql+asyncpg://user:password@db:5432/dbname
-      - SECRET_KEY=super-secret-key-change-me
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    env_file:
+      - .env
     depends_on:
       db:
         condition: service_healthy
