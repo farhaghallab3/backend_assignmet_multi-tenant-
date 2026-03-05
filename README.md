@@ -5,7 +5,6 @@ I use Python and FastAPI
 
 ## Database Design
 
-The system uses a relational schema optimized for multi-tenancy and high-performance search.
 
 ```mermaid
 erDiagram
