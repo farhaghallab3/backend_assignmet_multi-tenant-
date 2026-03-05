@@ -11,12 +11,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_db
 from models import User
 
-# Workaround for passlib + bcrypt 4.0+ compatibility issues
-# https://github.com/pyca/bcrypt/issues/684
 if not hasattr(bcrypt, "__about__"):
     bcrypt.__about__ = type('about', (object,), {'__version__': bcrypt.__version__})
 
-# Configuration
 SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-goes-here-for-dev-only")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60

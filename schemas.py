@@ -2,8 +2,6 @@ from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime
 from typing import List, Optional, Dict, Any
 from models import UserRole
-
-# Auth Schemas
 class UserRegister(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=8)
@@ -17,7 +15,6 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
-# Organization Schemas
 class OrgCreate(BaseModel):
     org_name: str
 
@@ -28,7 +25,6 @@ class OrgMemberInvite(BaseModel):
     email: EmailStr
     role: UserRole
 
-# Item Schemas
 class ItemCreate(BaseModel):
     item_details: Dict[str, Any]
     org_id: int
@@ -46,7 +42,6 @@ class ItemDetail(BaseModel):
     class Config:
         from_attributes = True
 
-# User & Membership Schemas
 class UserResponse(BaseModel):
     id: int
     email: EmailStr
@@ -56,7 +51,6 @@ class UserResponse(BaseModel):
     class Config:
         from_attributes = True
 
-# Audit Log Schemas
 class AuditLogResponse(BaseModel):
     id: int
     action: str

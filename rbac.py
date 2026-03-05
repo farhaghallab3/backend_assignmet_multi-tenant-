@@ -15,7 +15,6 @@ class RoleChecker:
         current_user: User = Depends(get_current_user),
         db: AsyncSession = Depends(get_db)
     ):
-        # Check if user is a member of the organization and has the required role
         query = select(Membership).where(
             Membership.user_id == current_user.id,
             Membership.org_id == id
@@ -37,6 +36,5 @@ class RoleChecker:
         
         return membership
 
-# Convenience dependencies
 require_admin = RoleChecker([UserRole.ADMIN])
 require_member_or_admin = RoleChecker([UserRole.ADMIN, UserRole.MEMBER])

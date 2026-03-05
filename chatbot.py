@@ -2,7 +2,6 @@ import os
 import google.generativeai as genai
 from fastapi.responses import StreamingResponse
 
-# Configure Gemini
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
@@ -24,7 +23,6 @@ async def get_ai_response(question: str, log_data: str, stream: bool = True):
     """
     
     if not model:
-        # Fallback if no API key is provided
         msg = "AI Chatbot is currently in mock mode (GEMINI_API_KEY not set). Logs summarized: " + str(len(log_data.split('\n'))) + " entries found."
         if stream:
             async def mock_stream():

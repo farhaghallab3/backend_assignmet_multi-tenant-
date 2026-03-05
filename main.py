@@ -27,8 +27,6 @@ async def startup():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-# --- Authentication ---
-
 @app.post("/auth/register", response_model=UserResponse)
 async def register(user_data: UserRegister, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User).where(User.email == user_data.email))
@@ -63,7 +61,6 @@ async def login(user_data: UserLogin, db: AsyncSession = Depends(get_db)):
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-# Workaround for Swagger UI "Authorize" button (optional helper)
 from fastapi.security import OAuth2PasswordRequestForm
 @app.post("/auth/token", include_in_schema=False)
 async def token_swagger(
@@ -72,8 +69,6 @@ async def token_swagger(
 ):
     """Hidden endpoint for Swagger UI's Authorize button"""
     return await login(UserLogin(email=form_data.username, password=form_data.password), db)
-
-# --- Organization API ---
 
 @app.post("/organization", response_model=OrgResponse)
 async def create_organization(
@@ -104,17 +99,15 @@ async def create_organization(
 async def add_user_to_org(
     id: int,
     invite_data: OrgMemberInvite,
-    membership: Membership = Depends(require_admin), # Dependency checks if current_user is admin of org id
+    membership: Membership = Depends(require_admin), 
     db: AsyncSession = Depends(get_db)
 ):
-    # Find user by email
     result = await db.execute(select(User).where(User.email == invite_data.email))
     user_to_add = result.scalar_one_or_none()
     
     if not user_to_add:
         raise HTTPException(status_code=404, detail="User not found")
     
-    # Check if already a member
     result = await db.execute(select(Membership).where(
         Membership.user_id == user_to_add.id,
         Membership.org_id == id
@@ -152,8 +145,6 @@ async def list_org_users(
     result = await db.execute(query)
     return result.scalars().all()
 
-# --- Full-Text Search ---
-
 @app.get("/organizations/{id}/users/search", response_model=List[UserResponse])
 async def search_org_users(
     id: int,
@@ -161,7 +152,6 @@ async def search_org_users(
     membership: Membership = Depends(require_admin),
     db: AsyncSession = Depends(get_db)
 ):
-    # Using Postgres Full-Text Search
     query = select(User).join(Membership).where(
         Membership.org_id == id,
         User.search_vector.op("@@")(func.plainto_tsquery("english", q))
@@ -169,8 +159,6 @@ async def search_org_users(
     
     result = await db.execute(query)
     return result.scalars().all()
-
-# --- Items API ---
 
 @app.post("/organizations/{id}/item", response_model=ItemResponse)
 async def create_item(
@@ -207,7 +195,6 @@ async def list_items(
 ):
     query = select(Item).where(Item.org_id == id)
     
-    # RBAC rules for item visibility
     if membership.role == UserRole.MEMBER:
         query = query.where(Item.user_id == membership.user_id)
     
@@ -221,8 +208,6 @@ async def list_items(
     
     return result.scalars().all()
 
-# --- Audit Logs ---
-
 @app.get("/organizations/{id}/audit-logs", response_model=List[AuditLogResponse])
 async def get_audit_logs(
     id: int,
@@ -233,8 +218,6 @@ async def get_audit_logs(
     result = await db.execute(query)
     return result.scalars().all()
 
-# --- Chatbot API (Placeholder/Stub) ---
-
 @app.post("/organizations/{id}/audit-logs/ask")
 async def ask_chatbot(
     id: int,
@@ -242,10 +225,8 @@ async def ask_chatbot(
     membership: Membership = Depends(require_admin),
     db: AsyncSession = Depends(get_db)
 ):
-    # Will implement the actual AI logic in chatbot.py
     from chatbot import get_ai_response
     
-    # Get today's logs
     today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
     query = select(AuditLog).where(
         AuditLog.org_id == id,

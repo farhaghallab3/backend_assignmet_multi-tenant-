@@ -22,7 +22,6 @@ class User(Base):
     full_name: Mapped[str] = mapped_column(String(255))
     created_at: Mapped[datetime] = mapped_column(DateTime, default=func.now())
 
-    # Full-text search vector for name/email
     search_vector: Mapped[TSVECTOR] = mapped_column(
         TSVECTOR,
         Computed(
