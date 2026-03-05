@@ -45,17 +45,12 @@ async def register(user_data: UserRegister, db: AsyncSession = Depends(get_db)):
     await db.refresh(user)
     return user
 
-from fastapi.security import OAuth2PasswordRequestForm
-
 @app.post("/auth/login", response_model=Token)
-async def login(
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-    db: AsyncSession = Depends(get_db)
-):
-    result = await db.execute(select(User).where(User.email == form_data.username))
+async def login(user_data: UserLogin, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(User).where(User.email == user_data.email))
     user = result.scalar_one_or_none()
     
-    if not user or not verify_password(form_data.password, user.hashed_password):
+    if not user or not verify_password(user_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
@@ -67,6 +62,16 @@ async def login(
         data={"sub": str(user.id)}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
+
+# Workaround for Swagger UI "Authorize" button (optional helper)
+from fastapi.security import OAuth2PasswordRequestForm
+@app.post("/auth/token", include_in_schema=False)
+async def token_swagger(
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    db: AsyncSession = Depends(get_db)
+):
+    """Hidden endpoint for Swagger UI's Authorize button"""
+    return await login(UserLogin(email=form_data.username, password=form_data.password), db)
 
 # --- Organization API ---
 
